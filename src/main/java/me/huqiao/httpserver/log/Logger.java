@@ -2,8 +2,8 @@ package me.huqiao.httpserver.log;
 
 import java.util.Date;
 
-import me.huqiao.httpserver.Config;
 import me.huqiao.httpserver.DateUtil;
+import me.huqiao.httpserver.config.Config;
 
 public class Logger {
 	final static Integer LOG_LEVEL_INFO = 0;

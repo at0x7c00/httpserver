@@ -10,7 +10,11 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.servlet.ServletResponse;
+
+import me.huqiao.httpserver.config.Config;
 import me.huqiao.httpserver.log.Logger;
+import me.huqiao.httpserver.servlet.impl.ServletResponseImpl;
 
 public class Response {
 	static Logger log = Logger.getLogger(Response.class);
@@ -95,7 +99,7 @@ public class Response {
 	}
 
 	private void statusCode(int code) throws Exception {
-		write(os,"HTTP/1.1 "+code+" "+codeDescriptionMap.get(code)+"\r\n");
+		write(os,"HTTP/1.0 "+code+" "+codeDescriptionMap.get(code)+"\r\n");
 		statusCode = code;
 	}
 	private void date(Date date) throws Exception {
@@ -119,6 +123,15 @@ public class Response {
 
 	public long getSentLen() {
 		return sentLen;
+	}
+	
+	public ServletResponse coverToServletResponse() {
+		ServletResponse resp = new ServletResponseImpl(this);
+		return resp;
+	}
+	
+	public OutputStream getOutputStream(){
+		return os;
 	}
 	
 }

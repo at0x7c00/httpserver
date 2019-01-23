@@ -1,10 +1,16 @@
 package me.huqiao.httpserver;
 
+import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+
 import me.huqiao.httpserver.log.Logger;
+import me.huqiao.httpserver.servlet.impl.ServletRequestImpl;
+import me.huqiao.httpserver.servlet.impl.ServletResponseImpl;
 
 public class Request {
 
@@ -17,15 +23,18 @@ public class Request {
 	
 	public Request(InputStream is){
 		try{
-			byte[] buffer = new byte[is.available()];
-			is.read(buffer);
+			BufferedInputStream bis = new BufferedInputStream(is);
+			int len = bis.available();
+			log.debug("is.available():" + len);
+			byte[] buffer = new byte[len];
+			bis.read(buffer);
 			String request = new String(buffer);
 			request = request.replaceAll("\r", "");
 			int lc = 1;
+			log.debug("Request:"+request);
 			if(request.trim().equals("")){
 				return;
 			}
-			log.debug(request);
 			for(String line : request.split("\n")){
 				if(line.trim().equals("")){
 					continue;
@@ -75,7 +84,12 @@ public class Request {
 		this.method = method;
 	}
 
+	@Deprecated
 	public String getPath() {
+		return path;
+	}
+	
+	public String getUri() {
 		return path;
 	}
 
@@ -107,4 +121,17 @@ public class Request {
 		this.inited = inited;
 	}
 	
+	public String getHeader(String header){
+		return getHeaders().get(header);
+	}
+	
+	public boolean isKeepAlive(){
+		return "keep-alive".equals(getHeader("Connection"));
+	}
+
+	public ServletRequest coverToServletRequest() {
+		ServletRequest req = new ServletRequestImpl(this);
+		return req;
+	}
+
 }
